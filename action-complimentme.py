@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 from hermes_python.hermes import Hermes
 from random import randint
 
