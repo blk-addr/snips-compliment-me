@@ -25,7 +25,6 @@ last_insult = 'That jerk hasn\'t had a taste of this yet'
 compliment_mode = 'ordered' # ordered or random, ordered only now because random sucks
 last_compliment_number = -1
 last_insult_number = -1
-in_session = False
 
 def reset_compliment_globals():
     global COMPLIMENTS
@@ -85,8 +84,6 @@ def get_next_insult():
 def get_compliment():
     global last_compliment
     global current_mode
-    global in_session
-    in_session = True
     if compliment_mode == 'ordered':
         compliment = get_next_compliment()
     else:
@@ -99,8 +96,6 @@ def get_compliment():
 def get_insult():
     global last_insult
     global current_mode
-    global in_session
-    in_session = True
     if compliment_mode == 'ordered':
         insult = get_next_insult()
     else:
@@ -115,7 +110,7 @@ def get_name(message):
     return name if name != '' and name != 'unknownword' else 'Unknown Person'
 
 def user_gives_answer(hermes, message):
-    if in_session == False:
+    if message.custom_data != message.session_id:
         print('Not in session, exiting')
         end_session(hermes, message)
     else:
@@ -133,19 +128,16 @@ def user_gives_answer(hermes, message):
                 insult(hermes, message)
 
 def end_session(hermes, message):
-    global in_session
-    in_session = False
     hermes.publish_end_session(message.session_id, None)
 
 def end_insult_session(hermes, message):
-    global in_session
-    in_session = False
     hermes.publish_end_session(message.session_id, 'Go away or I shall taunt you a second time')
 
 def compliment(hermes, message):
     hermes.publish_continue_session(message.session_id,
         get_compliment() + CONTINUE_QUESTION,
-        [INTENT_YES_NO])
+        [INTENT_YES_NO],
+        message.session_id)
 
 def compliment_repeat(hermes, message):
     hermes.publish_end_session(message.session_id, last_compliment)
@@ -153,17 +145,20 @@ def compliment_repeat(hermes, message):
 def compliment_someone(hermes, message):
     hermes.publish_continue_session(message.session_id,
         '{}, {}'.format(get_name(message),get_compliment()) + CONTINUE_QUESTION,
-        [INTENT_YES_NO])
+        [INTENT_YES_NO],
+        message.session_id)
 
 def insult(hermes, message):
     hermes.publish_continue_session(message.session_id,
         get_insult() + CONTINUE_QUESTION,
-        [INTENT_YES_NO])
+        [INTENT_YES_NO],
+        message.session_id)
 
 def insult_someone(hermes, message):
     hermes.publish_continue_session(message.session_id,
         '{}, {}'.format(get_name(message), get_insult()) + CONTINUE_QUESTION,
-        [INTENT_YES_NO])
+        [INTENT_YES_NO],
+        message.session_id)
 
 def insult_repeat(hermes, message):
     hermes.publish_end_session(message.session_id, last_insult)
