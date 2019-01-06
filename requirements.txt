@@ -1,1 +1,1 @@
-hermes_python==0.1.26
+hermes-python==0.1.26
