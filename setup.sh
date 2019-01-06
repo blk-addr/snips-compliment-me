@@ -21,4 +21,4 @@ fi
 pip install -r requirements.txt
 
 echo "Making action executable"
-chmod +x /var/lib/snips/skills/snips-compliment-me/action-complementme.py
+chmod +x /var/lib/snips/skills/snips-compliment-me/action-complimentme.py
